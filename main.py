@@ -145,7 +145,7 @@ scheduler_lr = StepLR(optimizer, step_size=5, gamma=0.1)
 
 # 读入数据
 # f_train = pk.load(open('legal_basis_data/train_processed_thulac_Legal_basis.pkl', 'rb'))
-f_train = pk.load(open('train_segment+keguan.pkl', 'rb'))
+f_train = pk.load(open('legal_basis_data/train_segment+keguan.pkl', 'rb'))
 f_valid = pk.load(open('legal_basis_data/valid_processed_thulac_Legal_basis.pkl', 'rb'))
 f_test = pk.load(open('legal_basis_data/test_processed_thulac_Legal_basis.pkl', 'rb'))
 
