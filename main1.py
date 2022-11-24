@@ -44,7 +44,7 @@ def evaluation_multitask(y, prediction, task_num):
     return metrics_acc
 
 #固定随机初始化
-# seed = int(time.time() * 256)
+
 
 def seed_torch(seed=42):
     random.seed(seed)
@@ -58,9 +58,7 @@ def seed_torch(seed=42):
     torch.backends.cudnn.enabled = False
 
 seed = args.seed
-# seed = random.randint(0,100)
-# print('seed:{}'.format(seed))
-# seed_torch(seed)
+
 loss_rate=1
 #模型超参数
 batch_size = args.batch_size
@@ -97,9 +95,7 @@ n_keti=75
 n_zhuti=7
 n_zhuguan=2
 n_keguan=63
-#模型构建 loss 梯度 初始化
-# word_embedding = torch.from_numpy(word_embedding).float()
-# embedding = nn.Embedding.from_pretrained(word_embedding, freeze=False)
+#模型构建
 
 model = HAN_Model(vocab_size=word_dict_len,
                   embedding_size=vec_size,

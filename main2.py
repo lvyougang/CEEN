@@ -83,9 +83,7 @@ n_keti = 75
 n_zhuti = 7
 n_zhuguan = 2
 n_keguan=63
-# 模型构建 loss 梯度 初始化
-# word_embedding = torch.from_numpy(word_embedding).float()
-# embedding = nn.Embedding.from_pretrained(word_embedding, freeze=False)
+# 模型构建
 
 model = HAN_Model(vocab_size=word_dict_len,
                   embedding_size=vec_size,
@@ -96,7 +94,7 @@ env = ENV(gru_size=lstm_size, dropoutp=0.5, class_num1=n_law, class_num2=n_accu,
           element_num2=n_zhuti, element_num3=n_zhuguan,element_num4=n_keguan)
 model = torch.nn.DataParallel(model)
 env = torch.nn.DataParallel(env)
-#加载no RL预热的模型参数
+#加载main1.py训练预热的模型参数
 dic = torch.load(model_save + 'xxx.pkl')
 
 
