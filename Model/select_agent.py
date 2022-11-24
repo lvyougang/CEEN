@@ -73,7 +73,6 @@ class Policy(nn.Module):
 
         return F.softmax(action_scores1,dim=1),F.softmax(action_scores2,dim=1),F.softmax(action_scores3,dim=1),F.softmax(action_scores4,dim=1),h1_out,h2_out,h3_out,h4_out
 def select_action(model, state1,state2,state3,state4):
-    # probs = self.model(Variable(state).cuda())
     # batch 8* sentence 10 *embedding
     state1=torch.transpose(state1, 0, 1)
     state2 = torch.transpose(state2, 0, 1)
@@ -113,34 +112,6 @@ def select_action(model, state1,state2,state3,state4):
         action_3.append(probs3.multinomial(1).data)
         action_4.append(probs4.multinomial(1).data)
 
-
-
-
-
-    #
-
-    # probs1=torch.clamp(outs[0],1e-10,1.0)
-    # probs2=torch.clamp(outs[1],1e-10,1.0)
-    # probs3=torch.clamp(outs[2],1e-10,1.0)
-    # probs4=torch.clamp(outs[3],1e-10,1.0)
-    # h1_in=outs[4]
-    # h2_in=outs[5]
-    # h3_in=outs[6]
-    # h4_in=outs[7]
-    # probs1 = self.model1(state1)
-    #
-    # probs2 = self.model1(state2)
-    # probs3 = self.model1(state3)
-    # probs4 = self.model1(state4)
-    # action_1=[]
-    # action_2 = []
-    # action_3 = []
-    # action_4 = []
-    # for i in range(probs1.shape[0]):
-    #     action_1.append(probs1[i].multinomial(1).data)
-    #     action_2.append(probs2[i].multinomial(1).data)
-    #     action_3.append(probs3[i].multinomial(1).data)
-    #     action_4.append(probs4[i].multinomial(1).data)
     action_1=torch.cat(action_1).reshape(state1.shape[1],state1.shape[0],-1)
     action_2 = torch.cat(action_2).reshape(state1.shape[1],state1.shape[0],-1)
     action_3 = torch.cat(action_3).reshape(state1.shape[1],state1.shape[0],-1)
@@ -160,27 +131,10 @@ def select_action(model, state1,state2,state3,state4):
     prob3 = torch.gather(probs_3, dim=2, index=action_3)
     prob4 = torch.gather(probs_4, dim=2, index=action_4)
 
-
-
-    # action = probs.multinomial(1).data
-    # print('action more')
-    # print(action)
-    #此处还没改
-    # prob = probs[:, action[0,0]].view(1, -1)
-    # print(prob)
     log_prob1 = prob1.log()
     log_prob2 = prob2.log()
     log_prob3 = prob3.log()
     log_prob4 = prob4.log()
-    # print(log_prob1.shape)
-
-    # log_prob = prob.log()
-
-
-
-    # print(prob1.shape)
-    # print(entropy1.shape)
-    # exit()
 
     return action_1,action_2,action_3,action_4,log_prob1,log_prob2,log_prob3,log_prob4
 
@@ -197,11 +151,6 @@ def update_parameters(reward1,reward2,reward3,reward4, log_prob1,log_prob2,log_p
         R3 = torch.zeros(reward3.shape[0])
         R4 = torch.zeros(reward4.shape[0])
 
-    # if self.gpu:
-    #     R1.cuda()
-    #     R2.cuda()
-    #     R3.cuda()
-    #     R4.cuda()
 
     reward1=reward1.squeeze(2).t()
     reward2 = reward2.squeeze(2).t()
@@ -259,36 +208,7 @@ def update_parameters(reward1,reward2,reward3,reward4, log_prob1,log_prob2,log_p
     utils.clip_grad_norm_(self.model.parameters(), 5)
     optimizer.step()
     scheduler.step()
-    # loss1 = loss1 / reward1.shape[0]
-    # loss2 = loss2 / reward1.shape[0]
-    # loss3 = loss3 / reward1.shape[0]
-    # loss4 = loss4 / reward1.shape[0]
-    # loss=loss1+loss2+loss3+loss4
-    # for parameters in self.model1.parameters():
-    #     print(parameters)
-    #     break
-    # self.optimizer.zero_grad()
-    # self.optimizer2.zero_grad()
-    # self.optimizer3.zero_grad()
-    # self.optimizer4.zero_grad()
-    # loss.backward()
-    # loss1.backward(retain_graph=True)
-    # loss2.backward(retain_graph=True)
-    # loss3.backward(retain_graph=True)
-    # loss4.backward()
-    #梯度裁剪
-    # utils.clip_grad_norm_(self.model.parameters(), 40)
-    # utils.clip_grad_norm_(self.model1.parameters(), 40)
-    # utils.clip_grad_norm_(self.model2.parameters(), 40)
-    # utils.clip_grad_norm_(self.model3.parameters(), 40)
-    # utils.clip_grad_norm_(self.model4.parameters(), 40)
-    # self.optimizer.step()
-    # self.optimizer2.step()
-    # self.optimizer3.step()
-    # self.optimizer4.step()
-    # for parameters in self.model1.parameters():
-    #     print(parameters)
-    #     break
+
     return total_loss.item(),((R1+R2+R3+R4)/(4)).mean().item()
 class REINFORCE:
     def __init__(self, hidden_size, batch_size,gru_size, action_space,gpu=False):
@@ -296,15 +216,7 @@ class REINFORCE:
         self.model = Policy(hidden_size=hidden_size,batch_size=batch_size, gru_size=gru_size, action_space=action_space)
 
         self.model=torch.nn.DataParallel(self.model)
-        # dic3 = torch.load('checkpoint/' + '1612102227agent.pkl')
-        # self.model.load_state_dict(dic3)
 
-        # dic1 = torch.load('checkpoint/' + '1611767119agent.pkl')
-        # self.model.load_state_dict(dic1)
-        # self.model1 = Policy(hidden_size, num_inputs, action_space)
-        # self.model2 = Policy(hidden_size, num_inputs, action_space)
-        # self.model3 = Policy(hidden_size, num_inputs, action_space)
-        # self.model4 = Policy(hidden_size, num_inputs, action_space)
         self.gpu=gpu
         if gpu:
             self.model.cuda()
@@ -316,18 +228,6 @@ class REINFORCE:
         self.optimizer = optim.Adam(self.model.parameters(), lr=1e-3)
         self.scheduler = CosineAnnealingLR(self.optimizer, T_max=32)
         self.scheduler_lr = StepLR(self.optimizer, step_size=2, gamma=0.1)
-
-        # self.optimizer = optim.Adam(chain(self.model1.parameters(), self.model2.parameters(), self.model3.parameters(),
-        #                                    self.model4.parameters()), lr=1e-3)
-        # self.optimizer1 = optim.Adam(self.model1.parameters(), lr=1e-3)
-        # self.optimizer2 = optim.Adam(self.model2.parameters(), lr=1e-3)
-        # self.optimizer3 = optim.Adam(self.model3.parameters(), lr=1e-3)
-        # self.optimizer4 = optim.Adam(self.model4.parameters(), lr=1e-3)
-
-        # self.model1.train()
-        # self.model2.train()
-        # self.model3.train()
-        # self.model4.train()
 
     def select_action(self, state1,state2,state3,state4):
         # probs = self.model(Variable(state).cuda())
@@ -370,34 +270,6 @@ class REINFORCE:
             action_3.append(probs3.multinomial(1).data)
             action_4.append(probs4.multinomial(1).data)
 
-
-
-
-
-        #
-
-        # probs1=torch.clamp(outs[0],1e-10,1.0)
-        # probs2=torch.clamp(outs[1],1e-10,1.0)
-        # probs3=torch.clamp(outs[2],1e-10,1.0)
-        # probs4=torch.clamp(outs[3],1e-10,1.0)
-        # h1_in=outs[4]
-        # h2_in=outs[5]
-        # h3_in=outs[6]
-        # h4_in=outs[7]
-        # probs1 = self.model1(state1)
-        #
-        # probs2 = self.model1(state2)
-        # probs3 = self.model1(state3)
-        # probs4 = self.model1(state4)
-        # action_1=[]
-        # action_2 = []
-        # action_3 = []
-        # action_4 = []
-        # for i in range(probs1.shape[0]):
-        #     action_1.append(probs1[i].multinomial(1).data)
-        #     action_2.append(probs2[i].multinomial(1).data)
-        #     action_3.append(probs3[i].multinomial(1).data)
-        #     action_4.append(probs4[i].multinomial(1).data)
         action_1=torch.cat(action_1).reshape(state1.shape[1],state1.shape[0],-1)
         action_2 = torch.cat(action_2).reshape(state1.shape[1],state1.shape[0],-1)
         action_3 = torch.cat(action_3).reshape(state1.shape[1],state1.shape[0],-1)
@@ -417,27 +289,10 @@ class REINFORCE:
         prob3 = torch.gather(probs_3, dim=2, index=action_3)
         prob4 = torch.gather(probs_4, dim=2, index=action_4)
 
-
-
-        # action = probs.multinomial(1).data
-        # print('action more')
-        # print(action)
-        #此处还没改
-        # prob = probs[:, action[0,0]].view(1, -1)
-        # print(prob)
         log_prob1 = prob1.log()
         log_prob2 = prob2.log()
         log_prob3 = prob3.log()
         log_prob4 = prob4.log()
-        # print(log_prob1.shape)
-
-        # log_prob = prob.log()
-
-
-
-        # print(prob1.shape)
-        # print(entropy1.shape)
-        # exit()
 
         return action_1,action_2,action_3,action_4,log_prob1,log_prob2,log_prob3,log_prob4
 
@@ -454,12 +309,6 @@ class REINFORCE:
             R3 = torch.zeros(reward3.shape[0])
             R4 = torch.zeros(reward4.shape[0])
 
-        # if self.gpu:
-        #     R1.cuda()
-        #     R2.cuda()
-        #     R3.cuda()
-        #     R4.cuda()
-        # print(reward1.shape)
         reward1=reward1.squeeze(2).t()
         reward2 = reward2.squeeze(2).t()
         reward3 = reward3.squeeze(2).t()
@@ -516,36 +365,7 @@ class REINFORCE:
         utils.clip_grad_norm_(self.model.parameters(), 5)
         self.optimizer.step()
         self.scheduler.step()
-        # loss1 = loss1 / reward1.shape[0]
-        # loss2 = loss2 / reward1.shape[0]
-        # loss3 = loss3 / reward1.shape[0]
-        # loss4 = loss4 / reward1.shape[0]
-        # loss=loss1+loss2+loss3+loss4
-        # for parameters in self.model1.parameters():
-        #     print(parameters)
-        #     break
-        # self.optimizer.zero_grad()
-        # self.optimizer2.zero_grad()
-        # self.optimizer3.zero_grad()
-        # self.optimizer4.zero_grad()
-        # loss.backward()
-        # loss1.backward(retain_graph=True)
-        # loss2.backward(retain_graph=True)
-        # loss3.backward(retain_graph=True)
-        # loss4.backward()
-        #梯度裁剪
-        # utils.clip_grad_norm_(self.model.parameters(), 40)
-        # utils.clip_grad_norm_(self.model1.parameters(), 40)
-        # utils.clip_grad_norm_(self.model2.parameters(), 40)
-        # utils.clip_grad_norm_(self.model3.parameters(), 40)
-        # utils.clip_grad_norm_(self.model4.parameters(), 40)
-        # self.optimizer.step()
-        # self.optimizer2.step()
-        # self.optimizer3.step()
-        # self.optimizer4.step()
-        # for parameters in self.model1.parameters():
-        #     print(parameters)
-        #     break
+
         return total_loss.item(),((R1+R2+R3+R4)/(4)).mean().item()
 
     def save(self,path):

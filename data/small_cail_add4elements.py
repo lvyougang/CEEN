@@ -121,9 +121,10 @@ dic[116]=[69,5,0]
 dic[117]=[69,5,1]
 dic[118]=[69,5,0]
 dic2=dic
+law2keguan=[(0, 0), (1, 1), (2, 2), (3, 3), (4, 4), (5, 5), (6, 6), (7, 7), (8, 8), (9, 9), (10, 10), (11, 6), (12, 11), (13, 9), (14, 9), (15, 12), (16, 13), (17, 14), (18, 15), (19, 16), (20, 17), (21, 18), (22, 7), (23, 9), (24, 19), (25, 20), (26, 21), (27, 9), (28, 22), (29, 7), (30, 18), (31, 19), (32, 9), (33, 23), (34, 24), (35, 25), (36, 26), (37, 27), (38, 28), (39, 4), (40, 29), (41, 28), (42, 19), (43, 30), (44, 7), (45, 31), (46, 9), (47, 32), (48, 33), (49, 34), (50, 9), (51, 7), (52, 9), (53, 35), (54, 4), (55, 9), (56, 7), (57, 36), (58, 37), (59, 38), (60, 4), (61, 39), (62, 40), (63, 41), (64, 35), (65, 9), (66, 42), (67, 31), (68, 6), (69, 9), (70, 9), (71, 43), (72, 44), (73, 9), (74, 9), (75, 13), (76, 4), (77, 45), (78, 46), (79, 47), (80, 48), (81, 49), (82, 50), (83, 51), (84, 52), (85, 7), (86, 53), (87, 54), (88, 7), (89, 7), (90, 55), (91, 56), (92, 57), (93, 7), (94, 52), (95, 58), (96, 9), (97, 59), (98, 7), (99, 60), (100, 61), (101, 62), (102, 52)]
+
 dataset=['train','valid','test']
 for tmp in dataset:
-
     f_train = pk.load(open(tmp+'_processed_thulac_Legal_basis.pkl', 'rb'))
     fact_train = f_train['fact_list']
     law_labels_train = f_train['law_label_lists']
@@ -132,22 +133,17 @@ for tmp in dataset:
     keti=[]
     zhuti=[]
     zhuguan=[]
+    keguan=[]
     for i in range(len(accu_label_train)):
         j=accu_label_train[i]
         keti.append(dic2[j][0])
         zhuti.append(dic2[j][1])
         zhuguan.append(dic2[j][2])
+        keguan.append(law2keguan[law_labels_train[i]][1])
     f_train['keti']=keti
     f_train['zhuti']=zhuti
     f_train['zhuguan']=zhuguan
-    with open(tmp+'_criminal_element3.pkl', 'wb') as fid:
+    f_train['keguan']=keguan
+    with open(tmp+'_criminal_element4.pkl', 'wb') as fid:
         pk.dump(f_train, fid)
 
-
-
-
-
-#a=torch.tensor([1,2,3])
-# b=torch.tensor([1,2,3])
-# c=torch.cat(a,b)
-# print(c)
