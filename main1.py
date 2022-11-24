@@ -121,9 +121,9 @@ scheduler = CosineAnnealingLR(optimizer, T_max=32)
 
 
 #读入数据
-f_train = pk.load(open('data/train_segment+keguan.pkl', 'rb'))
-f_valid = pk.load(open('data/valid_processed_thulac_Legal_basis.pkl', 'rb'))
-f_test = pk.load(open('data/test_processed_thulac_Legal_basis.pkl', 'rb'))
+f_train = pk.load(open('data/train_criminal_element4.pkl', 'rb'))
+f_valid = pk.load(open('data/valid_criminal_element4.pkl', 'rb'))
+f_test = pk.load(open('data/test_criminal_element4.pkl', 'rb'))
 
 train_step = int(len(f_train['fact_list']) / batch_size) + 1
 lose_num_train = train_step * batch_size - len(f_train['fact_list'])
